@@ -1,0 +1,7 @@
+name: CRM Integration
+type: module
+core_version_requirement: ^9
+description: Integration to Bigin CRM Rest API.
+package: Custom
+  
+version: 0.1
