@@ -1,0 +1,5 @@
+crm_integration.admin_settings_form:
+  title: 'CRM Integration'
+  route_name: crm_integration.admin_settings_form
+  description: 'Configure the crm integration.'
+  parent: system.admin_config_services
