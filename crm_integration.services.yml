@@ -1,0 +1,4 @@
+services:
+  crm_integration.auth_service:
+    class: Drupal\crm_integration\CRMIntegrationAuthService
+    arguments: ['@http_client']
