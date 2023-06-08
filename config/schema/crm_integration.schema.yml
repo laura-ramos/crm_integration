@@ -11,3 +11,9 @@ crm.settings:
     domain:
       type: string
       label: 'Bigin Domain'
+    roles:
+      type: sequence
+      label: Roles
+      sequence:
+        type: string
+        label: Rol

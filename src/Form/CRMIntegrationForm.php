@@ -71,6 +71,14 @@ class CRMIntegrationForm extends ConfigFormBase
       '#required' => TRUE,
     ];
 
+    $form['roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Select roles'),
+      '#default_value' => $config->get('roles'),
+      '#options' => $this->getRoles(),
+      '#required' => true,
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -80,16 +88,34 @@ class CRMIntegrationForm extends ConfigFormBase
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
     $config_keys = [
-      'client_id', 'client_secret', 'domain',
+      'client_id', 'client_secret', 'domain', 'roles',
     ];
     $crm_config = $this->config('crm_integration.settings');
     foreach ($config_keys as $config_key) {
       if ($form_state->hasValue($config_key)) {
-        $crm_config->set($config_key, $form_state->getValue($config_key));
+
+        if ($config_key == 'roles') {
+          $crm_config->set($config_key, array_filter($form_state->getValue(
+            $config_key
+          )));
+        } else {
+          $crm_config->set($config_key, $form_state->getValue($config_key));
+        }
       }
     }
     $crm_config->save();
     $this->messenger()->addMessage($this->t('The configuration options have been saved.'));
     parent::submitForm($form, $form_state);
   }
+
+  public function getRoles()
+  {
+    $roles = [];
+    $allRoles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
+    foreach ($allRoles as $item) {
+      $roles[$item->id()] = $item->label();
+    }
+    return $roles;
+  }
+
 }
