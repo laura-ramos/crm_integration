@@ -24,9 +24,15 @@ class CRMIntegrationAuthService {
   }
 
   /**
-   * Get access token.
+   * Generate access token.
+   *
+   * @param string $code
+   *   Authorization code.
+   *
+   * @return bool
+   *   Returns true if the access token could be generated.
    */
-  function getAccessToken()
+  public function generateAccessToken($code)
   {
     //https://www.bigin.com/developer/docs/apis/access-refresh.html
     $config = \Drupal::config('crm_integration.settings');
@@ -36,32 +42,54 @@ class CRMIntegrationAuthService {
     $params = [
       'client_id' => $clientId,
       'client_secret' => $clientSecret,
-      'code' => $this->getAuthorizationCode(),
+      'code' => $code,
       'grant_type' => 'authorization_code',
     ];
     try {
-      $request = $this->httpClient->request('POST', 'https://accounts.zoho.com/oauth/v2/token', [
+      $request = $this->httpClient->request('POST', $this->urlAccount().'/oauth/v2/token', [
         'query' => $params
       ]);
       $response = $request->getBody();
       $data  = json_decode($response->getContents());
-      if($data->error) {
-        return $data->error;
-      } else {
-        return $data->access_token;
-      }
+      //save token in progress
+      return empty($data->access_token) ? false : true;
+      
     } catch (RequestException $e) {
-      return 'Error';
+      return false;
     }
   }
 
   /**
-   * Generate authorization code
+   * Get domain-specific accounts URL to generate access and refresh token.
+   *
+   * @return string
+   *   The URL..
    */
-  function getAuthorizationCode()
-  {
-    //https://www.bigin.com/developer/docs/apis/auth-request.html
-    //example code: 1000.f5d1590cdcfac313b344452b24a8f25a.f8ff8362ccfc30331b45fd78530b6687
-    return 'xxx';
+  public function urlAccount() {
+    $config = \Drupal::config('crm_integration.settings');
+    $accountsArray = [
+      'com' => 'https://accounts.zoho.com',
+      'eu' => 'https://accounts.zoho.eu',
+      'cn' => 'https://accounts.zoho.com.cn',
+      'in' => 'https://accounts.zoho.in',
+    ];
+    return $accountsArray[$config->get('domain')];
+  }
+
+  /**
+   * Get domain specific accounts url for rest api.
+   *
+   * @return string
+   *   The URL..
+   */
+  public function urlApi() {
+    $config = \Drupal::config('crm_integration.settings');
+    $apiArray = [
+      'com' => 'www.zohoapis.com',
+      'eu' => 'www.zohoapis.eu',
+      'cn' => 'www.zohoapis.com.cn',
+      'in' => 'www.zohoapis.in',
+    ];
+    return $apiArray[$config->get('domain')];
   }
 }

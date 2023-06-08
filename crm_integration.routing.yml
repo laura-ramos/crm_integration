@@ -1,7 +1,14 @@
 crm_integration.admin_settings_form:
   path: '/admin/config/services/crm_integration/settings'
   defaults:
-    _form: '\Drupal\crm_integration\Form\CRMIntegrationForm'
+    _controller: '\Drupal\crm_integration\Controller\CRMIntegrationController::initialize'
     _title: 'CRM Integration Settings'
   requirements:
     _permission: 'administer crm integration'
+crm_integration.callback:
+  path: '/admin/config/services/crm_integration/callback'
+  defaults:
+    _controller: '\Drupal\crm_integration\Controller\CRMIntegrationController::callback'
+    _title: 'Generate token'
+  requirements:
+    _user_is_logged_in: 'TRUE'
