@@ -33,11 +33,16 @@ class CRMIntegrationApiService {
 
   /**
    * Add new user to Bigin crm.
+   *
+   * @param array
+   *   User data.
+   *
+   * @return string
+   *   api rest response
    */
   public function createUser($user) {
-    // get token
     $oauth = \Drupal::service('crm_integration.auth_service');
-    $accessToken = $oauth->getAccessToken();
+    $accessToken = $oauth->getAccessToken(); // get token
     // define header
     $headers = [
       'Authorization' => 'Zoho-oauthtoken '.$accessToken,
@@ -56,7 +61,7 @@ class CRMIntegrationApiService {
     }';
    
     try {
-      $request = $this->httpClient->post('https://www.zohoapis.com/bigin/v1/Contacts', [
+      $request = $this->httpClient->post($oauth->urlApi().'/bigin/v1/Contacts', [
         'headers' => $headers,
         'body' => $body
       ]);

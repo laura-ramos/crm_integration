@@ -51,9 +51,56 @@ class CRMIntegrationAuthService {
       ]);
       $response = $request->getBody();
       $data  = json_decode($response->getContents());
+      // save token in config for now
+      \Drupal::configFactory()->getEditable('crm_integration.settings')->set('access_token', $data->access_token)->save();
+      \Drupal::configFactory()->getEditable('crm_integration.settings')->set('refresh_token', $data->refresh_token)->save();
       //save token in progress
       return empty($data->access_token) ? false : true;
       
+    } catch (RequestException $e) {
+      return false;
+    }
+  }
+
+  /**
+   * Get access token.
+   *
+   * @return string
+   *   token.
+   */
+  public function getAccessToken() {
+    $config = \Drupal::config('crm_integration.settings');
+    return $config->get('access_token') ?? '';
+  }
+
+  /**
+   * Refresh token.
+   *
+   * @return bool
+   *   token.
+   */
+  public function refreshToken() {
+    $config = \Drupal::config('crm_integration.settings');
+    $clientId = $config->get('client_id');
+    $clientSecret = $config->get('client_secret');
+
+    $params = [
+      'client_id' => $clientId,
+      'client_secret' => $clientSecret,
+      'refresh_token' => $this->getAccessToken(),
+      'grant_type' => 'refresh_token',
+    ];
+    try {
+      $request = $this->httpClient->request('POST', $this->urlAccount().'/oauth/v2/token', [
+        'query' => $params
+      ]);
+      $response = $request->getBody();
+      $data  = json_decode($response->getContents());
+      //save token
+      \Drupal::configFactory()->getEditable('crm_integration.settings')->set('access_token', $data->access_token)->save();
+      //\Drupal::configFactory()->getEditable('crm_integration.settings')->set('refresh_token', $data->refresh_token)->save();
+
+      return empty($data->access_token) ? false : true;
     } catch (RequestException $e) {
       return false;
     }
@@ -85,10 +132,10 @@ class CRMIntegrationAuthService {
   public function urlApi() {
     $config = \Drupal::config('crm_integration.settings');
     $apiArray = [
-      'com' => 'www.zohoapis.com',
-      'eu' => 'www.zohoapis.eu',
-      'cn' => 'www.zohoapis.com.cn',
-      'in' => 'www.zohoapis.in',
+      'com' => 'https://www.zohoapis.com',
+      'eu' => 'https://www.zohoapis.eu',
+      'cn' => 'https://www.zohoapis.com.cn',
+      'in' => 'https://www.zohoapis.in',
     ];
     return $apiArray[$config->get('domain')];
   }
