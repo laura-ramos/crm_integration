@@ -52,9 +52,10 @@ class CRMIntegrationAuthService {
       $response = $request->getBody();
       $data  = json_decode($response->getContents());
       // save token in config for now
-      \Drupal::configFactory()->getEditable('crm_integration.settings')->set('access_token', $data->access_token)->save();
-      \Drupal::configFactory()->getEditable('crm_integration.settings')->set('refresh_token', $data->refresh_token)->save();
-      //save token in progress
+      if(!empty($data->access_token)) {
+        \Drupal::configFactory()->getEditable('crm_integration.settings')->set('access_token', $data->access_token)->save();
+        \Drupal::configFactory()->getEditable('crm_integration.settings')->set('refresh_token', $data->refresh_token)->save();
+      }
       return empty($data->access_token) ? false : true;
       
     } catch (RequestException $e) {

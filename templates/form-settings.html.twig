@@ -1,2 +1,23 @@
-{{ form }}
+<div>
+<div>{{ form }}</div>
+<div>
+Before you make requests to Bigin API endpoints, register your application (client) with Bigin's Authorization server.
+<ul>
+    <li>Go to Zoho <a class="" href="https://api-console.zoho.com/" target="_bank">Developer Console</a>.</li>
+    <li>Choose a client type: Web Based</li>
+    <li>Enter the following details:</li>
+    <b>Client Name:</b> The name of your application you want to register with Zoho.<br>
+    <b>Homepage URL:</b> The URL of your web page.<br>
+    <b>Authorized Redirect URIs:</b> A valid URL of your application to which Zoho Accounts redirects you with a grant token(code) after successful authentication.
+    <li>Click **CREATE.</li>
+    You will receive the following credentials:
+    <ul>
+        <li><b>Client ID:</b> The consumer key generated from the connected app.</li>
+        <li><b>Client Secret:</b> The consumer secret generated from the connected app.</li>
+    </ul>
+
+</ul>
+<p>After to register your application with Zoho CRM you can Get access token</p>
 <a class="button button--secondary" href="{{ auth_url }}">{{ "Get authorization"|t }}</a>
+</div>
+</div>

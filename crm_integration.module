@@ -19,8 +19,8 @@ function crm_integration_theme($existing, $type, $theme, $path) {
 * Implementation of hook_ENTITY_TYPE_insert()
 */
 function crm_integration_user_insert(UserInterface $user) {
-  //$config = \Drupal::config('crm_integration.settings');
-  //$roles_config = $config->get('roles');
+  $config = \Drupal::config('crm_integration.settings');
+  $roles_config = $config->get('roles');
   
   $roles = $user->getRoles();
   $data = [
@@ -28,11 +28,9 @@ function crm_integration_user_insert(UserInterface $user) {
     'email' => $user->getEmail(),
   ];
   // validate role user
-  if (in_array('free', $roles) || in_array('basic', $roles) || in_array('comercial', $roles) || in_array('enterprise', $roles)) {
-    //save the new user in Bigin crm
+  $rol = array_intersect($roles_config, $roles);
+  if($rol) {
     $service = \Drupal::service('crm_integration.api_service');
-    $createUser = $service->createUser($data);
-    \Drupal::logger('crm')->info($createUser);
+    $createUser = $service->createUse($data);
   }
-
 }
