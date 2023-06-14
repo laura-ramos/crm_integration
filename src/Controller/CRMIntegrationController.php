@@ -51,8 +51,10 @@ class CRMIntegrationController extends ControllerBase {
     $form = $this->formBuilder()->getForm('Drupal\crm_integration\Form\CRMIntegrationForm');
     //get redirect url
     $redirect = Url::fromRoute('crm_integration.callback',[], ['absolute' => true])->toString();
+    //scopes for API requests to restrict clients from accessing unauthorized resources
+    $scope = 'ZohoBigin.modules.contacts.CREATE';
     //The authorization request link
-    $authUrl = 'https://accounts.zoho.com/oauth/v2/auth?scope=ZohoBigin.users.ALL&client_id='.$config->get('client_id').'&response_type=code&access_type=online&redirect_uri='.$redirect;
+    $authUrl = 'https://accounts.zoho.com/oauth/v2/auth?scope='.$scope.'&client_id='.$config->get('client_id').'&response_type=code&access_type=offline&redirect_uri='.$redirect.'&prompt=consent';
 
     return [
       '#theme' => 'form_settings',
