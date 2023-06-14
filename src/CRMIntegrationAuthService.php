@@ -5,6 +5,7 @@ namespace Drupal\crm_integration;
 use Drupal\Core\Database\Connection;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Drupal\Core\Url;
 
 /**
  * Class CRMIntegrationAuthService.
@@ -38,12 +39,14 @@ class CRMIntegrationAuthService {
     $config = \Drupal::config('crm_integration.settings');
     $clientId = $config->get('client_id');
     $clientSecret = $config->get('client_secret');
+    $redirectUri = Url::fromRoute('crm_integration.callback',[], ['absolute' => true])->toString();
 
     $params = [
       'client_id' => $clientId,
       'client_secret' => $clientSecret,
       'code' => $code,
       'grant_type' => 'authorization_code',
+      'redirect_uri' => $redirectUri
     ];
     try {
       $request = $this->httpClient->request('POST', $this->urlAccount().'/oauth/v2/token', [

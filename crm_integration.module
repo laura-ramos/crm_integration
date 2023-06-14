@@ -19,6 +19,7 @@ function crm_integration_theme($existing, $type, $theme, $path) {
 * Implementation of hook_ENTITY_TYPE_insert()
 */
 function crm_integration_user_insert(UserInterface $user) {
+  // add new contact in bigin crm after user insert
   $config = \Drupal::config('crm_integration.settings');
   $roles_config = $config->get('roles');
   
@@ -31,6 +32,6 @@ function crm_integration_user_insert(UserInterface $user) {
   $rol = array_intersect($roles_config, $roles);
   if($rol) {
     $service = \Drupal::service('crm_integration.api_service');
-    $createUser = $service->createUse($data);
+    $createUser = $service->createUser($data);
   }
 }
