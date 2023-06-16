@@ -5,6 +5,7 @@ namespace Drupal\crm_integration;
 use Drupal\Core\Database\Connection;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class CRMIntegrationApiService.
@@ -65,15 +66,13 @@ class CRMIntegrationApiService {
         'headers' => $headers,
         'body' => $body
       ]);
-      $res_body = $request->getBody();
-      $response  = json_decode($res_body->getContents());
+      $resBody = $request->getBody();
+      $response  = json_decode($resBody->getContents());
       return $response->data;
 
-    } catch (RequestException $e) {
-      $exception = $e->getResponse()->getBody();
-      $exception = json_decode($exception);
-      return $exception->message;
+    } catch (GuzzleException $e) {
+      \Drupal::logger('crm')->error("Error trying create contact Bigin api. Exception message: {$e->getMessage()}");
+      return false;
     }
-   }
-  
+  }
 }

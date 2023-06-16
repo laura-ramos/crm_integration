@@ -47,6 +47,7 @@ class CRMIntegrationController extends ControllerBase {
   public function initialize()
   {
     $config = \Drupal::config('crm_integration.settings');
+    $service = \Drupal::service('crm_integration.auth_service');
 
     $form = $this->formBuilder()->getForm('Drupal\crm_integration\Form\CRMIntegrationForm');
     //get redirect url
@@ -54,12 +55,15 @@ class CRMIntegrationController extends ControllerBase {
     //scopes for API requests to restrict clients from accessing unauthorized resources
     $scope = 'ZohoBigin.modules.contacts.CREATE';
     //The authorization request link
-    $authUrl = 'https://accounts.zoho.com/oauth/v2/auth?scope='.$scope.'&client_id='.$config->get('client_id').'&response_type=code&access_type=offline&redirect_uri='.$redirect.'&prompt=consent';
+    $authUrl = $service->urlAccount().'/oauth/v2/auth?scope='.$scope.'&client_id='.$config->get('client_id').
+    '&response_type=code&access_type=offline&redirect_uri='.$redirect.'&prompt=consent';
+    $revokeUrl = Url::fromRoute('crm_integration.revoke',[])->toString();
 
     return [
       '#theme' => 'form_settings',
       '#auth_url' => $authUrl,
       '#form' => $form,
+      '#revoke_url' => $config->get('access_token') ? $revokeUrl : null,
     ];
   }
 
@@ -68,10 +72,22 @@ class CRMIntegrationController extends ControllerBase {
       //  Get access tokens using authorization code 
       $authService = \Drupal::service('crm_integration.auth_service');
       $access = $authService->generateAccessToken($this->currentRequest->query->get('code'));
-      return [
-        '#type' => 'markup',
-        '#markup' => $access ? 'Success' : 'Failed',
-      ];
+      $this->messenger()->addMessage($access ? 'Success' : 'Failed');
+      return $this->redirect('crm_integration.admin_settings_form');
     }
+  }
+
+  /**
+   * Revoke the refresh token.
+   */
+  public function revoke() {
+    $authService = \Drupal::service('crm_integration.auth_service');
+    try {
+      $data = $authService->revokeToken();
+      $this->messenger->addMessage($data, 'status');
+    } catch (GuzzleException $e) {
+      $this->messenger->addMessage($this->t('We have problems trying revoke your token.'), 'error');
+    }
+    return $this->redirect('crm_integration.admin_settings_form');
   }
 }

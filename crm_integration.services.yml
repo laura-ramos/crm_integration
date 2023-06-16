@@ -1,7 +1,7 @@
 services:
   crm_integration.auth_service:
     class: Drupal\crm_integration\CRMIntegrationAuthService
-    arguments: ['@http_client']
+    arguments: ['@http_client', '@config.factory']
   crm_integration.api_service:
     class: Drupal\crm_integration\CRMIntegrationApiService
     arguments: ['@database', '@http_client']

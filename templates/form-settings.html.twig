@@ -19,5 +19,8 @@ Before you make requests to Bigin API endpoints, register your application (clie
 </ul>
 <p>After to register your application with Zoho CRM you can Get access token</p>
 <a class="button button--secondary" href="{{ auth_url }}">{{ "Get authorization"|t }}</a>
+{% if revoke_url %}
+    <a href="{{ revoke_url }}">{{ "Revoke authorization"|t }}</a>
+{% endif %}
 </div>
 </div>

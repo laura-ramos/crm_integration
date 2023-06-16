@@ -12,3 +12,10 @@ crm_integration.callback:
     _title: 'Generate token'
   requirements:
     _user_is_logged_in: 'TRUE'
+crm_integration.revoke:
+  path: '/admin/config/services/crm_integration/revoke'
+  defaults:
+    _controller: '\Drupal\crm_integration\Controller\CRMIntegrationController::revoke'
+    _title: 'Revoke token'
+  requirements:
+    _user_is_logged_in: 'TRUE'

@@ -9,7 +9,8 @@ function crm_integration_theme($existing, $type, $theme, $path) {
     'form_settings' => [
       'variables' => [
         'form' => null, 
-        'auth_url' => null 
+        'auth_url' => null,
+        'revoke_url' => null,
       ]
     ],
   ];
